@@ -2,20 +2,44 @@ import { twiml } from 'twilio';
 
 const { VoiceResponse } = twiml;
 
-const response = new VoiceResponse();
-
-export function welcome(): string {
+//
+export function greeting(): string {
   const twiml = new VoiceResponse();
+  twiml.say('Thank you for calling. How can we help you today?');
 
   const gather = twiml.gather({
-    action: '/ivr/menu',
-    numDigits: 1,
+    input: ['dtmf'],
+    action: '/ivr/dialogflow',
     method: 'POST',
+    speechModel: 'experimental_conversations',
+    language: 'en-US',
   });
 
-  gather.say({ loop: 3 }, 'Welcome to the App');
+  gather.say(
+    {
+      loop: 1,
+      language: 'en-US',
+      voice: 'Polly.Amy',
+    },
+    'Welcome to the App',
+  );
 
-  return response.toString();
+  return twiml.toString();
+}
+
+export function connectToDialogflow(): string {
+  const twiml = new VoiceResponse();
+  const connect = twiml.connect({
+    action: 'ivr/dialogflow',
+  });
+  connect.virtualAgent({
+    connectorName: 'nutracap',
+    statusCallback: 'ivr/followup',
+  });
+
+  console.log(twiml.toString());
+
+  return twiml.toString();
 }
 
 export function menu(digit: string): string {
@@ -86,7 +110,7 @@ function redirectWelcome(): string {
   twiml.say(
     {
       voice: 'Polly.Amy',
-      language: 'en-GB',
+      language: 'en-US',
     },
     'Returning to the main menu',
   );

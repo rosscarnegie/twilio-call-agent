@@ -1,23 +1,19 @@
 import { Router, Request, Response } from 'express';
-import { welcome, menu, actions } from './handler';
+import { greeting, connectToAgent } from './handler';
 
 const router: Router = Router();
 
 // POST: /ivr/welcome
 router.post('/welcome', (req: Request, res: Response) => {
-  res.send(welcome());
+  res.send(greeting());
 });
 
-// POST: /ivr/menu
-router.post('/menu', (req: Request, res: Response) => {
-  const digit: string = req.body.Digits;
-  return res.send(menu(digit));
+router.post('/dialogflow', (req: Request, res: Response) => {
+  res.send(connectToAgent());
 });
 
-// POST: /ivr/actions
-router.post('/actions', (req: Request, res: Response) => {
-  const digit: string = req.body.Digits;
-  res.send(actions(digit));
+router.post('/followup', (req: Request, res: Response) => {
+  res.send(connectToAgent());
 });
 
 // POST: /ivr/planets
